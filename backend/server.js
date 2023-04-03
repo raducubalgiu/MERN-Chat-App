@@ -1,24 +1,22 @@
 const express = require("express");
 const dotenv = require("dotenv");
+const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 
-const chats = require("./data/data");
+const userRouter = require("./routes/userRoutes");
 
 const app = express();
 dotenv.config();
+app.use(express.json());
 const port = process.env.PORT;
 
 app.get("/", (req, res) => {
 	res.send("API IS RUNNING!");
 });
 
-app.get("/api/chats", (req, res) => {
-	console.log(chats);
-	res.send(chats);
-});
+app.use("/api/user", userRouter);
 
-app.get("/api/chats/:id", (req, res) => {
-	res.send(chats);
-});
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(port, () => {
 	console.log(`App running on port ${port}`);
