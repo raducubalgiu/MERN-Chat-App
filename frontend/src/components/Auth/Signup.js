@@ -7,18 +7,78 @@ import {
 	InputGroup,
 	InputRightElement,
 	Button,
+	useToast,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 export default function Signup() {
+	const [show, setShow] = useState(false);
+	const toast = useToast();
+	const [loading, setLoading] = useState(false);
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
-	const [show, setShow] = useState(false);
+	const history = useHistory();
 
-	const postDetails = pics => {};
+	const submitHandler = async () => {
+		setLoading(true);
+		if (!name || !email || !password || !confirmPassword) {
+			toast({
+				title: "Please fill all the fields",
+				status: "warning",
+				duration: 5000,
+				isClosable: true,
+				position: "bottom",
+			});
+			setLoading(false);
+			return;
+		}
 
-	const submitHandler = () => {};
+		if (password !== confirmPassword) {
+			toast({
+				title: "Passwords does not match",
+				status: "warning",
+				duration: 5000,
+				isClosable: true,
+				position: "bottom",
+			});
+			setLoading(false);
+			return;
+		}
+
+		try {
+			const config = {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			};
+
+			const data = axios.post("/api/user", { name, email, password }, config);
+
+			toast({
+				title: "Registration successfull",
+				status: "warning",
+				duration: 5000,
+				isClosable: true,
+				position: "bottom",
+			});
+
+			localStorage.setItem("userInfo", JSON.stringify(data));
+			setLoading(false);
+			history.push("/chats");
+		} catch (error) {
+			toast({
+				title: error.response.data.message,
+				status: "warning",
+				duration: 5000,
+				isClosable: true,
+				position: "bottom",
+			});
+			setLoading(false);
+		}
+	};
 
 	return (
 		<VStack spacing="5px">
@@ -66,20 +126,12 @@ export default function Signup() {
 					</InputRightElement>
 				</InputGroup>
 			</FormControl>
-			<FormControl id="pic">
-				<FormLabel>Upload Your picture</FormLabel>
-				<Input
-					type="file"
-					p={1.5}
-					accept="image/*"
-					onChange={e => postDetails(e.target.files[0])}
-				/>
-			</FormControl>
 			<Button
 				colorScheme="blue"
 				width="100%"
 				style={{ marginTop: 15 }}
 				onClick={submitHandler}
+				isLoading={loading}
 			>
 				Sign up
 			</Button>
