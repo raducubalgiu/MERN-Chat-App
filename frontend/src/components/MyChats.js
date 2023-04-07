@@ -8,7 +8,7 @@ import { getSender } from "../config/ChatLogics";
 import GroupChatModal from "./miscellaneous/GroupChatModal";
 import ChatLoading from "./ChatLoading";
 
-export default function MyChats() {
+export default function MyChats({ fetchAgain }) {
   const [loggedUser, setLoggedUser] = useState();
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
   const toast = useToast();
@@ -39,7 +39,7 @@ export default function MyChats() {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
     // eslint-disable-next-line
-  }, []);
+  }, [fetchAgain]);
 
   return (
     <div
